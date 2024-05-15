@@ -95,6 +95,7 @@ component {
 					.run( returnOutput=true );
 				} catch( any e ) {
 					print.redLine( "Error checking Java version: #e.message#" ).toConsole();
+					return;
 				}
 				// search for "x.x.x"
 				versionSearch = javaVersionOutput.reFindNoCase( '"([0-9]+\.[0-9]+\.[0-9]+)"', 1, true );
