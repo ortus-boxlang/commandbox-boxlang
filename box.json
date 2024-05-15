@@ -12,6 +12,10 @@
         "type": "Git",
         "URL": "https://github.com/ortus-boxlang/commandbox-boxlang"
     },
+    "scripts": {
+        "postVersion": "publish",
+        "onRelease": "!git push --follow-tags"
+    },
     "shortDescription": "CommandBox BoxLang CLI Tools",
     "slug": "commandbox-boxlang",
     "type": "commandbox-modules",
