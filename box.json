@@ -1,24 +1,24 @@
 {
-    "author": "Brad Wood",
-    "description": "CLI Tools for BoxLang",
-    "ignore": [
+    "author":"Brad Wood",
+    "description":"CLI Tools for BoxLang",
+    "ignore":[
         "**/.*",
         "/test/",
         "/tests/"
     ],
-    "location": "ForgeboxStorage",
-    "name": "CommandBox BoxLang CLI Tools",
-    "repository": {
-        "type": "Git",
-        "URL": "https://github.com/ortus-boxlang/commandbox-boxlang"
+    "location":"ForgeboxStorage",
+    "name":"CommandBox BoxLang CLI Tools",
+    "repository":{
+        "type":"Git",
+        "URL":"https://github.com/ortus-boxlang/commandbox-boxlang"
     },
-    "scripts": {
-        "postVersion": "publish",
-        "onRelease": "!git push --follow-tags"
+    "scripts":{
+        "postVersion":"publish",
+        "onRelease":"!git push --follow-tags"
     },
-    "shortDescription": "CommandBox BoxLang CLI Tools",
-    "slug": "commandbox-boxlang",
-    "type": "commandbox-modules",
-    "version": "1.0.0",
-    "listed": false
+    "shortDescription":"CommandBox BoxLang CLI Tools",
+    "slug":"commandbox-boxlang",
+    "type":"commandbox-modules",
+    "version":"1.1.0",
+    "listed":false
 }
