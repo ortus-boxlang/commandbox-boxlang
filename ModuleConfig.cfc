@@ -83,7 +83,7 @@ component {
 			interceptData.serverInfo.runwarOptions.engineName = '';
 
 			
-			if( !len( interceptData.serverInfo.servletPassPredicate ) ) {
+			if( !isNull( interceptData.serverInfo.servletPassPredicate ) && !len( interceptData.serverInfo.servletPassPredicate ) ) {
 				print.line( "Setting servletPassPredicate" ).toConsole();
 				interceptData.serverInfo.servletPassPredicate = "regex( '^/(.+?\\.cf[cms])(/.*)?$' ) or regex( '^/(.+?\\.bx[sm])(/.*)?$' )";
 			}
