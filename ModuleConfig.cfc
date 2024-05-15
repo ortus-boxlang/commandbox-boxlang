@@ -90,6 +90,9 @@ component {
 
 			try {
 				var javaBin = interceptData.serverInfo.javaHome;
+				if( shell.getversion().listGetAt( 1, "." ) < 6 ) {
+					javaBin = '"' & javaBin & '"';
+				}
 				var javaVersionOutput = wirebox.getInstance( name='CommandDSL', initArguments={ name : "run" } )
 					.params( javaBin & " -version" )
 					.run( returnOutput=true );
