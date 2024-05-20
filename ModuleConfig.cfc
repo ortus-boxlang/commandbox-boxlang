@@ -82,10 +82,18 @@ component {
 			print.line( "Setting engine name" ).toConsole();
 			interceptData.serverInfo.runwarOptions.engineName = '';
 
-			
+			var newPredicate = "regex( '^/(.+?\.cf[cms])(/.*)?$' ) or regex( '^/(.+?\.bx[sm])(/.*)?$' )";
 			if( !isNull( interceptData.serverInfo.servletPassPredicate ) && !len( interceptData.serverInfo.servletPassPredicate ) ) {
-				print.line( "Setting servletPassPredicate" ).toConsole();
-				interceptData.serverInfo.servletPassPredicate = "regex( '^/(.+?\\.cf[cms])(/.*)?$' ) or regex( '^/(.+?\\.bx[sm])(/.*)?$' )";
+				print.line( "Setting server servletPassPredicate" ).toConsole();
+				interceptData.serverInfo.servletPassPredicate = newPredicate;
+			}
+			
+			if( !isNull( interceptData.serverInfo.sites ) ) {
+				for( var siteName in interceptData.serverInfo.sites ) {
+					var site = interceptData.serverInfo.sites[ siteName ];
+					print.line( "Setting site [#siteName#] servletPassPredicate" ).toConsole();
+					site.servletPassPredicate = newPredicate;
+				}
 			}
 
 			try {
