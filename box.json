@@ -19,6 +19,6 @@
     "shortDescription":"CommandBox BoxLang CLI Tools",
     "slug":"commandbox-boxlang",
     "type":"commandbox-modules",
-    "version":"1.1.6",
+    "version":"1.1.7",
     "listed":false
 }
