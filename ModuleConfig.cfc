@@ -118,7 +118,8 @@ component {
 					}
 				}
 				javaBin = fileSystemUtil.normalizeSlashes( javaBin );
-				javacBin = javaBin.replace( "/bin/java", "/bin/javac" );
+				// remove any quotes added above for CommandBox 5.9
+				javacBin = javaBin.replace( "/bin/java", "/bin/javac" ).replace( '"', '', 'all' );
 				if( !( fileExists( javacBin ) ) ) {					
 					throw( message="BoxLang Requires a JDK (not JRE). [#javacBin#] doesn't exist.", detail="Add [javaVersion=openjdk17_jdk] to your start command.", type="commandException" ).toConsole();
 				}
