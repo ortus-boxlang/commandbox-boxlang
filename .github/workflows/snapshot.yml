@@ -11,6 +11,8 @@ jobs:
   ##########################################################################################
   tests:
     secrets: inherit
+    permissions:
+      contents: write
     uses: ./.github/workflows/tests.yml
 
   ##########################################################################################
@@ -41,5 +43,7 @@ jobs:
     uses: ./.github/workflows/release.yml
     needs: [ tests, format ]
     secrets: inherit
+    permissions:
+      contents: write
     with:
       snapshot: true
