@@ -27,6 +27,8 @@ jobs:
   build:
     name: Build & Publish
     runs-on: ubuntu-20.04
+    permissions:
+      contents: write
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -134,6 +136,8 @@ jobs:
     name: Prep Next Release
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-20.04
+    permissions:
+      contents: write
     needs: [ build ]
     steps:
       # Checkout development
