@@ -1,0 +1,10 @@
+# Dependencies
+/docbox/**
+modules/**
+tests/testbox/**
+testbox/**
+
+# Build Artifacts
+.tmp/**
+.artifacts/**
+changelog-latest.md

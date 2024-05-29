@@ -1,24 +1,38 @@
 {
+	"name":"CommandBox BoxLang CLI Tools",
     "author":"Brad Wood",
+	"version":"1.2.0",
+	"location":"https://downloads.ortussolutions.com/ortussolutions/commandbox-modules/commandbox-boxlang/@build.version@/commandbox-boxlang-@build.version@.zip",
+	"slug":"commandbox-boxlang",
+	"shortDescription":"CommandBox BoxLang CLI Tools",
+    "type":"commandbox-modules",
     "description":"CLI Tools for BoxLang",
     "ignore":[
         "**/.*",
         "/test/",
         "/tests/"
     ],
-    "location":"ForgeboxStorage",
-    "name":"CommandBox BoxLang CLI Tools",
+	"license":[
+        {
+            "type":"Apache2",
+            "url":"http://www.apache.org/licenses/LICENSE-2.0"
+        }
+    ],
+	"contributors":[
+        "Luis Majano (lmajano@ortussolutions.com)"
+    ],
     "repository":{
         "type":"Git",
         "URL":"https://github.com/ortus-boxlang/commandbox-boxlang"
     },
-    "scripts":{
-        "postVersion":"publish",
-        "onRelease":"!git push --follow-tags"
+	"devDependencies":{
+        "commandbox-docbox":"*"
     },
-    "shortDescription":"CommandBox BoxLang CLI Tools",
-    "slug":"commandbox-boxlang",
-    "type":"commandbox-modules",
-    "version":"1.1.8",
-    "listed":false
+	"dependencies":{},
+    "scripts":{
+        "release":"recipe build/release.boxr",
+        "format":"cfformat run commands,build,ModuleConfig.cfc --overwrite",
+        "format:watch":"cfformat watch commands,build,ModuleConfig.cfc",
+        "format:check":"cfformat check commands,build,ModuleConfig.cfc"
+    }
 }
