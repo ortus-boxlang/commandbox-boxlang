@@ -33,7 +33,9 @@ component {
 				serverInfo = serverService.getServerInfoByName( interceptData_serverInfo_name );
 				if ( !( serverInfo.CFengine contains "boxlang" ) ) {
 					variables.print
-						.redLine( "Server [#interceptData_serverInfo_name#] is of type [#serverInfo.cfengine#] and not a BoxLang server.  Ignoring." )
+						.redLine(
+							"Server [#interceptData_serverInfo_name#] is of type [#serverInfo.cfengine#] and not a BoxLang server.  Ignoring."
+						)
 						.toConsole();
 					return;
 				}
@@ -64,7 +66,9 @@ component {
 						boxLangHome = serverInfo.serverHomeDirectory & "/WEB-INF/boxlang/modules/";
 					} else if ( !serverDetails.serverIsNew ) {
 						variables.print
-							.redLine( "Server [#serverInfo.name#] in [#interceptData.packagePathRequestingInstallation#] is of type [#serverInfo.cfengine#] and not an BoxLang server.  Ignoring." )
+							.redLine(
+								"Server [#serverInfo.name#] in [#interceptData.packagePathRequestingInstallation#] is of type [#serverInfo.cfengine#] and not an BoxLang server.  Ignoring."
+							)
 							.toConsole();
 					}
 				}
@@ -81,7 +85,9 @@ component {
 
 			if ( !len( boxLangHome ) ) {
 				variables.print
-					.redLine( "No BoxLang server found in [#interceptData.packagePathRequestingInstallation#]. Specify the server you want by setting the name of your server into the BOXLANG_HOME environment variable." )
+					.redLine(
+						"No BoxLang server found in [#interceptData.packagePathRequestingInstallation#]. Specify the server you want by setting the name of your server into the BOXLANG_HOME environment variable."
+					)
 					.toConsole();
 				return;
 			}
