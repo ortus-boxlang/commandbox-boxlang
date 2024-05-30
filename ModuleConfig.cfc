@@ -32,7 +32,7 @@ component {
 				print.yellowLine( "Using interceptData to load server [#interceptData_serverInfo_name#]" ).toConsole();
 				serverInfo = serverService.getServerInfoByName( interceptData_serverInfo_name );
 				if ( !( serverInfo.CFengine contains "boxlang" ) ) {
-					variables.print
+					print
 						.redLine(
 							"Server [#interceptData_serverInfo_name#] is of type [#serverInfo.cfengine#] and not a BoxLang server.  Ignoring."
 						)
@@ -65,7 +65,7 @@ component {
 					if ( !serverDetails.serverIsNew && ( serverInfo.CFengine contains "boxlang" ) ) {
 						boxLangHome = serverInfo.serverHomeDirectory & "/WEB-INF/boxlang/modules/";
 					} else if ( !serverDetails.serverIsNew ) {
-						variables.print
+						print
 							.redLine(
 								"Server [#serverInfo.name#] in [#interceptData.packagePathRequestingInstallation#] is of type [#serverInfo.cfengine#] and not an BoxLang server.  Ignoring."
 							)
@@ -77,14 +77,14 @@ component {
 				// BOXLANG_HOME=servername
 			}
 			if ( !len( boxLangHome ) && BOXLANG_HOME != "" ) {
-				variables.print
+				print
 					.yellowLine( "Using BOXLANG_HOME environment variable to install module [#BOXLANG_HOME#]" )
 					.toConsole();
 				boxLangHome = BOXLANG_HOME;
 			}
 
 			if ( !len( boxLangHome ) ) {
-				variables.print
+				print
 					.redLine(
 						"No BoxLang server found in [#interceptData.packagePathRequestingInstallation#]. Specify the server you want by setting the name of your server into the BOXLANG_HOME environment variable."
 					)
@@ -169,7 +169,7 @@ component {
 				).toConsole();
 			}
 
-			variables.print.line( "Verified Java 21 JDK" ).toConsole();
+			print.line( "Verified Java 21 JDK" ).toConsole();
 		}
 	}
 
