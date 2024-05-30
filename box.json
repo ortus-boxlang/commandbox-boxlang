@@ -1,10 +1,10 @@
 {
-	"name":"CommandBox BoxLang CLI Tools",
+    "name":"CommandBox BoxLang CLI Tools",
     "author":"Brad Wood",
-	"version":"1.2.0",
-	"location":"https://downloads.ortussolutions.com/ortussolutions/commandbox-modules/commandbox-boxlang/@build.version@/commandbox-boxlang-@build.version@.zip",
-	"slug":"commandbox-boxlang",
-	"shortDescription":"CommandBox BoxLang CLI Tools",
+    "version":"1.3.0",
+    "location":"https://downloads.ortussolutions.com/ortussolutions/commandbox-modules/commandbox-boxlang/@build.version@/commandbox-boxlang-@build.version@.zip",
+    "slug":"commandbox-boxlang",
+    "shortDescription":"CommandBox BoxLang CLI Tools",
     "type":"commandbox-modules",
     "description":"CLI Tools for BoxLang",
     "ignore":[
@@ -12,23 +12,23 @@
         "/test/",
         "/tests/"
     ],
-	"license":[
+    "license":[
         {
             "type":"Apache2",
             "url":"http://www.apache.org/licenses/LICENSE-2.0"
         }
     ],
-	"contributors":[
+    "contributors":[
         "Luis Majano (lmajano@ortussolutions.com)"
     ],
     "repository":{
         "type":"Git",
         "URL":"https://github.com/ortus-boxlang/commandbox-boxlang"
     },
-	"devDependencies":{
+    "devDependencies":{
         "commandbox-docbox":"*"
     },
-	"dependencies":{},
+    "dependencies":{},
     "scripts":{
         "release":"recipe build/release.boxr",
         "format":"cfformat run commands,build,ModuleConfig.cfc --overwrite",
