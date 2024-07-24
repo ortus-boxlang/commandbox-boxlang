@@ -32,7 +32,7 @@ component {
 				print.yellowLine( "Using interceptData to load server [#interceptData_serverInfo_name#]" ).toConsole();
 				serverInfo = serverService.getServerInfoByName( interceptData_serverInfo_name );
 				if ( !( serverInfo.CFengine contains "boxlang" ) ) {
-					print
+					local.print
 						.redLine(
 							"Server [#interceptData_serverInfo_name#] is of type [#serverInfo.cfengine#] and not a BoxLang server.  Ignoring."
 						)
@@ -65,7 +65,7 @@ component {
 					if ( !serverDetails.serverIsNew && ( serverInfo.CFengine contains "boxlang" ) ) {
 						boxLangHome = serverInfo.serverHomeDirectory & "/WEB-INF/boxlang/modules/";
 					} else if ( !serverDetails.serverIsNew ) {
-						print
+						local.print
 							.redLine(
 								"Server [#serverInfo.name#] in [#interceptData.packagePathRequestingInstallation#] is of type [#serverInfo.cfengine#] and not an BoxLang server.  Ignoring."
 							)
@@ -77,14 +77,14 @@ component {
 				// BOXLANG_HOME=servername
 			}
 			if ( !len( boxLangHome ) && BOXLANG_HOME != "" ) {
-				print
+				local.print
 					.yellowLine( "Using BOXLANG_HOME environment variable to install module [#BOXLANG_HOME#]" )
 					.toConsole();
 				boxLangHome = BOXLANG_HOME;
 			}
 
 			if ( !len( boxLangHome ) ) {
-				print
+				local.print
 					.redLine(
 						"No BoxLang server found in [#interceptData.packagePathRequestingInstallation#]. Specify the server you want by setting the name of your server into the BOXLANG_HOME environment variable."
 					)
@@ -99,32 +99,37 @@ component {
 	}
 
 	function onServerStart( interceptData ){
+		var semanticVersion = wirebox.getInstance( "SemanticVersion@SemanticVersion" );
 		var print          = wirebox.getInstance( "PrintBuffer" );
 		var fileSystemUtil = wirebox.getInstance( "FileSystem" );
-		print.line( "onServerStart: #interceptData.serverInfo.cfengine# " ).toConsole();
+		// CommandBox 6.1 has "proper" support for BoxLang servers
+		var shimNeeded = semanticVersion.isNew( shell.getversion(), "6.1.0" );
+
 		// If we're running in a BoxLang server, workaround some old behaviors
 		if ( interceptData.serverInfo.cfengine contains "boxlang" ) {
-			print.line( "Setting engine name" ).toConsole();
-			interceptData.serverInfo.runwarOptions.engineName = "";
+			if( shimNeeded ) {
+				print.line( "Setting engine name" ).toConsole();
+				interceptData.serverInfo.runwarOptions.engineName = "";
 
-			var newPredicate = "regex( '^/(.+?\.cf[cms])(/.*)?$' ) or regex( '^/(.+?\.bx[sm])(/.*)?$' )";
-			if (
-				!isNull( interceptData.serverInfo.servletPassPredicate ) && !len(
-					interceptData.serverInfo.servletPassPredicate
-				)
-			) {
-				print.line( "Setting server servletPassPredicate" ).toConsole();
-				interceptData.serverInfo.servletPassPredicate = newPredicate;
-			}
+				var newPredicate = "regex( '^/(.+?\.cf[cms])(/.*)?$' ) or regex( '^/(.+?\.bx[sm])(/.*)?$' )";
+				if (
+					!isNull( interceptData.serverInfo.servletPassPredicate ) && !len(
+						interceptData.serverInfo.servletPassPredicate
+					)
+				) {
+					print.line( "Setting server servletPassPredicate" ).toConsole();
+					interceptData.serverInfo.servletPassPredicate = newPredicate;
+				}
 
-			if ( !isNull( interceptData.serverInfo.sites ) ) {
-				for ( var siteName in interceptData.serverInfo.sites ) {
-					var site = interceptData.serverInfo.sites[ siteName ];
-					print.line( "Setting site [#siteName#] servletPassPredicate" ).toConsole();
-					site.servletPassPredicate = newPredicate;
+				if ( !isNull( interceptData.serverInfo.sites ) ) {
+					for ( var siteName in interceptData.serverInfo.sites ) {
+						var site = interceptData.serverInfo.sites[ siteName ];
+						print.line( "Setting site [#siteName#] servletPassPredicate" ).toConsole();
+						site.servletPassPredicate = newPredicate;
+					}
 				}
 			}
-
+			// Still detect Java version regardless since this is helpful
 			try {
 				var javaBin = interceptData.serverInfo.javaHome;
 				if ( shell.getversion().listGetAt( 1, "." ) < 6 ) {
