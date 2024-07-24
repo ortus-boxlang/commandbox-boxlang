@@ -99,7 +99,7 @@ component {
 	}
 
 	function onServerStart( interceptData ){
-		var semanticVersion = wirebox.getInstance( "SemanticVersion@SemanticVersion" );
+		var semanticVersion = wirebox.getInstance( "semanticVersion@semver" );
 		var print           = wirebox.getInstance( "PrintBuffer" );
 		var fileSystemUtil  = wirebox.getInstance( "FileSystem" );
 		// CommandBox 6.1 has "proper" support for BoxLang servers
