@@ -103,7 +103,7 @@ component {
 		var print           = wirebox.getInstance( "PrintBuffer" );
 		var fileSystemUtil  = wirebox.getInstance( "FileSystem" );
 		// CommandBox 6.1 has "proper" support for BoxLang servers
-		var shimNeeded      = semanticVersion.isNew( shell.getversion(), "6.1.0" );
+		var shimNeeded      = semanticVersion.isNew( shell.getversion(), "6.1.0-rc" );
 
 		// If we're running in a BoxLang server, workaround some old behaviors
 		if ( interceptData.serverInfo.cfengine contains "boxlang" ) {
