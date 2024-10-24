@@ -73,14 +73,24 @@ component {
 					}
 				}
 
-				// Allow an env var hint to tell us what server to use
-				// BOXLANG_HOME=servername
 			}
+
+			// Allow an env var hint to tell us what server to use
+			// BOXLANG_HOME=servername
 			if ( !len( boxLangHome ) && BOXLANG_HOME != "" ) {
 				local.print
 					.yellowLine( "Using BOXLANG_HOME environment variable to install module [#BOXLANG_HOME#]" )
 					.toConsole();
 				boxLangHome = BOXLANG_HOME;
+			}
+
+			// Last ditch attempt, look for a boxlang home in their user home directory
+			var boxLangInUserHome = server.system.properties[ 'user.dir' ] & '/.boxlang/modules/'
+			if ( !len( boxLangHome ) && directoryExists( boxLangInUserHome ) ) {
+				local.print
+					.yellowLine( "Found BoxLang home in your user's home directory [#boxLangInUserHome#]" )
+					.toConsole();
+				boxLangHome = boxLangInUserHome;
 			}
 
 			if ( !len( boxLangHome ) ) {
@@ -94,6 +104,9 @@ component {
 
 			print.greenLine( "Installing into BoxLang server home [#boxLangHome#]" ).toConsole();
 			interceptData.installDirectory = boxLangHome;
+			// We'll make the boxlang home the current working directory for the install so the box.json gets managed there
+			interceptData.currentWorkingDirectory = boxLangHome.replace( 'modules/', '' );
+			interceptData.packagePathRequestingInstallation = interceptData.currentWorkingDirectory;
 		}
 		// end boxlang-modules check
 	}
