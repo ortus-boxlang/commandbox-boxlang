@@ -80,7 +80,7 @@ component {
 				local.print
 					.yellowLine( "Using BOXLANG_HOME environment variable to install module [#BOXLANG_HOME#]" )
 					.toConsole();
-				boxLangHome = BOXLANG_HOME;
+				boxLangHome = BOXLANG_HOME & "/modules/";
 			}
 
 			// Last ditch attempt, look for a boxlang home in their user home directory
