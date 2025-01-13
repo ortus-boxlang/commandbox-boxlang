@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.10.0] - 2025-01-13
+
 - Updated to use JRE instead of JDK
 
 ## [1.9.0] - 2024-12-03
@@ -44,7 +46,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - First Iteration Release
 
-[Unreleased]: https://github.com/ortus-boxlang/commandbox-boxlang/compare/v1.9.0...HEAD
+[Unreleased]: https://github.com/ortus-boxlang/commandbox-boxlang/compare/v1.10.0...HEAD
+
+[1.10.0]: https://github.com/ortus-boxlang/commandbox-boxlang/compare/v1.9.0...v1.10.0
 
 [1.9.0]: https://github.com/ortus-boxlang/commandbox-boxlang/compare/v1.8.0...v1.9.0
 
