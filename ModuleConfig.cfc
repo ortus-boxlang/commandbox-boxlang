@@ -169,24 +169,14 @@ component {
 				print.line( "Found Java version: [#javaVersion#]" ).toConsole();
 				if ( val( javaVersion.listGetAt( 1, "." ) ) < 21 ) {
 					throw(
-						message = "BoxLang Requires a JDK version of 21 or higher.  Your current version is [#javaVersion#].",
-						detail  = "Add [javaVersion=openjdk21_jdk] to your start command.",
+						message = "BoxLang Requires a JRE version of 21 or higher.  Your current version is [#javaVersion#].",
+						detail  = "Add [javaVersion=openjdk21_jre] to your start command.",
 						type    = "commandException"
 					);
 				}
 			}
 			javaBin  = fileSystemUtil.normalizeSlashes( javaBin );
-			// remove any quotes added above for CommandBox 5.9
-			javacBin = javaBin.replace( "/bin/java", "/bin/javac" ).replace( """", "", "all" );
-			if ( !( fileExists( javacBin ) ) ) {
-				throw(
-					message = "BoxLang Requires a JDK (not JRE). [#javacBin#] doesn't exist.",
-					detail  = "Add [javaVersion=openjdk21_jdk] to your start command.",
-					type    = "commandException"
-				).toConsole();
-			}
-
-			print.line( "Verified Java 21 JDK" ).toConsole();
+			print.line( "Verified Java 21 JRE" ).toConsole();
 		}
 	}
 
