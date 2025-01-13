@@ -175,7 +175,7 @@ component {
 					);
 				}
 			}
-			javaBin  = fileSystemUtil.normalizeSlashes( javaBin );
+			javaBin = fileSystemUtil.normalizeSlashes( javaBin );
 			print.line( "Verified Java 21 JRE" ).toConsole();
 		}
 	}
