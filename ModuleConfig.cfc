@@ -204,7 +204,7 @@ component {
 					if ( !fileExists( runwarJarLocal ) ) {
 						print
 							.yellowLine(
-								"Runwar 6.x with Jakarta support is required for BoxLang servers newer than 1.0.0-beta9. "
+								"Runwar 6.x with Jakarta support is required for BoxLang servers newer than 1.0.0-beta26. "
 							)
 							.toConsole();
 						print.yellowLine( "Downloading from #runwarJarURL#" ).toConsole();
