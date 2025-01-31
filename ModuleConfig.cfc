@@ -177,6 +177,44 @@ component {
 			}
 			javaBin = fileSystemUtil.normalizeSlashes( javaBin );
 			print.line( "Verified Java 21 JRE" ).toConsole();
+
+			// CommandBox 6.2 will have "proper" support for Jakarta servers
+			//var jakartaShimNeeded      = semanticVersion.isNew( shell.getversion(), "6.2.0" );
+			var jakartaShimNeeded      = true;
+			var boxlangRequiresJakarta = semanticVersion.isNew( "1.0.0-beta9", interceptData.serverInfo.engineVersion );
+
+			if( jakartaShimNeeded ) { 
+				if( boxlangRequiresJakarta ) {
+					
+					// Ensure Runwar 6.x with Jakarta support
+					var runwarJarURL = 'https://s3.amazonaws.com/downloads.ortussolutions.com/cfmlprojects/runwar/6.0.0-SNAPSHOT/runwar-6.0.0-SNAPSHOT.jar';
+					var runwarJarLocal = expandPath( '/commandbox-boxlang/lib/runwar-jakarta.jar' );
+					var runwarJarFolderLocal = getDirectoryFromPath( runwarJarLocal );
+					if( !directoryExists( runwarJarFolderLocal ) ) {
+						directoryCreate( runwarJarFolderLocal );
+					}
+					if( !fileExists( runwarJarLocal ) ) {
+						print.yellowLine( "Runwar 6.x with Jakarta support is required for BoxLang servers newer than 1.0.0-beta9. " ).toConsole();
+						print.yellowLine( "Downloading from #runwarJarURL#" ).toConsole();
+						try {
+							http url="#runwarJarURL#" file="#runwarJarLocal#" timeout="200";
+						} catch( any e ) {
+							print.redLine( "Error downloading Runwar 6.x: #e.message#" ).toConsole();
+							print.redLine( "Please download it manually and place it in #runwarJarLocal#" ).toConsole();
+							rthrow;
+						}
+					} else {
+						print.line( "Runwar 6.x with Jakarta support is already installed." ).toConsole();
+					}
+					print.line( "Overriding serverInfo.runwarJarPath to [#runwarJarLocal#]" ).toConsole();
+					
+					interceptData.serverInfo.runwarJarPath = runwarJarLocal;
+				
+				} else {
+					print.line( "BoxLang server of version [#interceptData.serverInfo.engineVersion#] does not require Jakarta support." ).toConsole();
+				}
+			}
+			
 		}
 	}
 
