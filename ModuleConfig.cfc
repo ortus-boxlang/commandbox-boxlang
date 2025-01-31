@@ -182,12 +182,12 @@ component {
 			// var jakartaShimNeeded      = semanticVersion.isNew( shell.getversion(), "6.2.0" );
 			var jakartaShimNeeded      = true;
 			var boxlangRequiresJakarta = true;
-			var engineVersion = interceptData.serverInfo.engineVersion.listFirst('+');
+			var engineVersion          = interceptData.serverInfo.engineVersion.listFirst( "+" );
 			// I can't use proper semver parsing because our betas aren't named beta.9 beta.10, etc. so they don't sort correctly
-			if( engineVersion contains '1.0.0-beta' ) {
-				engineVersion = engineVersion.replace( '1.0.0-beta', '' );
+			if ( engineVersion contains "1.0.0-beta" ) {
+				engineVersion = engineVersion.replace( "1.0.0-beta", "" );
 				// betas prior to beta 26 don't require Jakarta
-				if( isNumeric( engineVersion ) && engineVersion <= 26 ) {
+				if ( isNumeric( engineVersion ) && engineVersion <= 26 ) {
 					boxlangRequiresJakarta = false;
 				}
 			}
