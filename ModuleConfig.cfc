@@ -170,7 +170,7 @@ component {
 				if ( val( javaVersion.listGetAt( 1, "." ) ) < 21 ) {
 					throw(
 						message = "BoxLang Requires a JRE version of 21 or higher.  Your current version is [#javaVersion#].",
-						detail  = "Add [javaVersion=openjdk21_jre] to your start command.",
+						detail  = "Add [javaVersion=openjdk21] to your start command.",
 						type    = "commandException"
 					);
 				}
@@ -195,7 +195,7 @@ component {
 			if ( jakartaShimNeeded ) {
 				if ( boxlangRequiresJakarta ) {
 					// Ensure Runwar 6.x with Jakarta support
-					var runwarJarURL         = "https://s3.amazonaws.com/downloads.ortussolutions.com/cfmlprojects/runwar/6.0.0-SNAPSHOT/runwar-6.0.0-SNAPSHOT.jar";
+					var runwarJarURL         = "https://s3.amazonaws.com/downloads.ortussolutions.com/cfmlprojects/runwar/6.0.0/runwar-6.0.0.jar";
 					var runwarJarLocal       = expandPath( "/commandbox-boxlang/lib/runwar-jakarta.jar" );
 					var runwarJarFolderLocal = getDirectoryFromPath( runwarJarLocal );
 					if ( !directoryExists( runwarJarFolderLocal ) ) {
