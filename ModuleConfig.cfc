@@ -77,9 +77,7 @@ component {
 			// See if the current working directory is a boxlang server home
 			var cwd = fileSystemUtil.resolvePath( interceptData.packagePathRequestingInstallation );
 			if ( fileExists( cwd & "/config/boxlang.json" ) ) {
-				local.print
-					.yellowLine( "Current directory appears to be a BoxLang server home [#cwd#]" )
-					.toConsole();
+				local.print.yellowLine( "Current directory appears to be a BoxLang server home [#cwd#]" ).toConsole();
 				boxLangHome = cwd & "/modules/";
 			}
 
