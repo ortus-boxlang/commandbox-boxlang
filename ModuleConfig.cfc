@@ -91,7 +91,7 @@ component {
 			}
 
 			// Last ditch attempt, look for a boxlang home in their user home directory
-			var boxLangInUserHome = server.system.properties[ "user.dir" ] & "/.boxlang/modules/"
+			var boxLangInUserHome = server.system.properties[ "user.home" ] & "/.boxlang/modules/"
 			if ( !len( boxLangHome ) && directoryExists( boxLangInUserHome ) ) {
 				local.print
 					.yellowLine( "Found BoxLang home in your user's home directory [#boxLangInUserHome#]" )
