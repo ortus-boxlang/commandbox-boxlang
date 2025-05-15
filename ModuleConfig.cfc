@@ -13,6 +13,14 @@ component {
 	public void function onInstall( interceptData ){
 		if ( ( interceptData.artifactDescriptor.type ?: "" ) == "boxlang-modules" ) {
 			var print          = wirebox.getInstance( "PrintBuffer" );
+
+			if( !isNull( interceptData.installArgs.directory ) ) {
+				local.print
+					.yellowLine( "Install directory explicitly overriden to [#interceptData.installArgs.directory#] so not looking for a BoxLang server home to override." )
+					.toConsole();
+				return;
+			}
+
 			var systemSettings = wirebox.getInstance( "SystemSettings" );
 			var configService  = wirebox.getInstance( "ConfigService" );
 			var serverService  = wirebox.getInstance( "ServerService" );
