@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.18.0] - 2025-06-16
+
 ### Fixed
 
 - build identifier issues with box.json fixed.
@@ -64,7 +66,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - First Iteration Release
 
-[Unreleased]: https://github.com/ortus-boxlang/commandbox-boxlang/compare/v1.17.0...HEAD
+[Unreleased]: https://github.com/ortus-boxlang/commandbox-boxlang/compare/v1.18.0...HEAD
+
+[1.18.0]: https://github.com/ortus-boxlang/commandbox-boxlang/compare/v1.17.0...v1.18.0
 
 [1.17.0]: https://github.com/ortus-boxlang/commandbox-boxlang/compare/v1.16.0...v1.17.0
 
