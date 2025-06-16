@@ -38,7 +38,7 @@ component {
 		} );
 
 		// Create Project Dependency Mappings
-		// fileSystemUtil.createMapping( "@module_name@", variables.cwd );
+		fileSystemUtil.createMapping( "@module_name@", variables.cwd );
 
 		return this;
 	}
@@ -57,6 +57,11 @@ component {
 		buildID = createUUID(),
 		branch  = "development"
 	){
+		// If branch == development, then we are building a snapshot
+		if ( branch == "development" ) {
+			arguments.version = arguments.version & "-snapshot";
+		}
+
 		// Create project mapping
 		fileSystemUtil.createMapping( arguments.projectName, variables.cwd );
 
@@ -93,7 +98,7 @@ component {
 
 		// Tests First, if they fail then exit
 		// Run your tests via the `command()` options here.
-		command( "task run tests/TestModule.cfc" ).run();
+		command( "task run build/Tests.cfc" ).run();
 
 		// Check Exit Code?
 		if ( shell.getExitCode() ) {
@@ -167,8 +172,8 @@ component {
 		command( "tokenReplace" )
 			.params(
 				path        = "/#variables.projectBuildDir#/**",
-				token       = ( arguments.branch == "main" ? "@build.number@" : "+@build.number@" ),
-				replacement = ( arguments.branch == "main" ? arguments.buildID : "-snapshot" )
+				token       = ( arguments.branch == "master" ? "@build.number@" : "+@build.number@" ),
+				replacement = ( arguments.branch == "master" ? arguments.buildID : "" )
 			)
 			.run();
 
@@ -299,9 +304,9 @@ component {
 	 */
 	private function ensureExportDir(
 		required projectName,
-		version = "1.0.0"
+		version   = "1.0.0"
 	){
-		if ( structKeyExists( variables, "exportsDir" ) && directoryExists( variables.exportsDir ) ) {
+		if ( structKeyExists( variables, "exportsDir" ) && directoryExists( variables.exportsDir ) ){
 			return;
 		}
 		// Prepare exports directory

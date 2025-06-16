@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- build identifier issues with box.json fixed.
+
 ## [1.17.0] - 2025-05-15
 
 ## [1.16.0] - 2025-04-07
