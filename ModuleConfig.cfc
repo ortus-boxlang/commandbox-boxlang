@@ -281,8 +281,7 @@ component {
 
 			// Jakarta EE support configuration
 			// CommandBox 6.2 will have "proper" support for Jakarta servers
-			// var jakartaShimNeeded      = semanticVersion.isNew( shell.getversion(), "6.2.0" );
-			var jakartaShimNeeded      = true;
+			var jakartaShimNeeded      = semanticVersion.isNew( shell.getversion(), "6.2.0" );
 			var boxlangRequiresJakarta = true;
 			var engineVersion          = interceptData.serverInfo.engineVersion.listFirst( "+" );
 
@@ -299,7 +298,7 @@ component {
 			if ( jakartaShimNeeded ) {
 				if ( boxlangRequiresJakarta ) {
 					// Download and configure Runwar 6.x with Jakarta support
-					var runwarJarURL         = "https://s3.amazonaws.com/downloads.ortussolutions.com/cfmlprojects/runwar/6.0.0/runwar-6.0.0.jar";
+					var runwarJarURL         = "https://s3.amazonaws.com/downloads.ortussolutions.com/cfmlprojects/runwar/6.1.0-SNAPSHOT/runwar-6.1.0-SNAPSHOT.jar";
 					var runwarJarLocal       = expandPath( "/commandbox-boxlang/lib/runwar-jakarta.jar" );
 					var runwarJarFolderLocal = getDirectoryFromPath( runwarJarLocal );
 					if ( !directoryExists( runwarJarFolderLocal ) ) {
