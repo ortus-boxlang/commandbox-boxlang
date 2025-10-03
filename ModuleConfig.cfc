@@ -298,7 +298,7 @@ component {
 			if ( jakartaShimNeeded ) {
 				if ( boxlangRequiresJakarta ) {
 					// Download and configure Runwar 6.x with Jakarta support
-					var runwarJarURL         = "https://s3.amazonaws.com/downloads.ortussolutions.com/cfmlprojects/runwar/6.0.3-SNAPSHOT/runwar-6.0.3-SNAPSHOT.jar";
+					var runwarJarURL         = "https://s3.amazonaws.com/downloads.ortussolutions.com/cfmlprojects/runwar/6.1.0-SNAPSHOT/runwar-6.1.0-SNAPSHOT.jar";
 					var runwarJarLocal       = expandPath( "/commandbox-boxlang/lib/runwar-jakarta.jar" );
 					var runwarJarFolderLocal = getDirectoryFromPath( runwarJarLocal );
 					if ( !directoryExists( runwarJarFolderLocal ) ) {
