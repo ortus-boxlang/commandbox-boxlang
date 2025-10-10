@@ -63,6 +63,18 @@ component {
 				return;
 			}
 
+			// Check for installPaths in the box.json
+			var slug = interceptData.artifactDescriptor.slug;
+			var installPaths = interceptData.containerBoxJSON.installPaths ?: {};
+			if( installPaths.keyExists( slug ) ) {
+				local.print
+					.yellowLine(
+						"Found install path for [#slug#]: [#installPaths[slug]#] in box.json, so not looking for a BoxLang server home to override."
+					)
+					.toConsole();
+				return;
+			}
+
 			// Initialize required services
 			var systemSettings = wirebox.getInstance( "SystemSettings" );
 			var configService  = wirebox.getInstance( "ConfigService" );
