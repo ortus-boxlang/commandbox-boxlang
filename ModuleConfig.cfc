@@ -22,6 +22,10 @@
 component {
 
 	function configure(){
+		variables.settings = {
+			"CLIBoxLangVersion" : "",
+			"CLIVerbose" : false
+		};
 	}
 
 	/**
@@ -271,7 +275,7 @@ component {
 			}
 
 			// Parse Java version from output using regex
-			versionSearch = javaVersionOutput.reFindNoCase(
+			var versionSearch = javaVersionOutput.reFindNoCase(
 				"""([0-9]+\.[0-9]+\.[0-9]+)""",
 				1,
 				true
