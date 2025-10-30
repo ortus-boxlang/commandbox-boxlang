@@ -22,6 +22,10 @@
 component {
 
 	function configure(){
+		variables.settings = {
+			"CLIBoxLangVersion" : "",
+			"CLIVerbose" : false
+		};
 	}
 
 	/**
@@ -64,12 +68,12 @@ component {
 			}
 
 			// Check for installPaths in the box.json
-			var slug = interceptData.artifactDescriptor.slug;
+			var slug         = interceptData.artifactDescriptor.slug;
 			var installPaths = interceptData.containerBoxJSON.installPaths ?: {};
-			if( installPaths.keyExists( slug ) ) {
+			if ( installPaths.keyExists( slug ) ) {
 				local.print
 					.yellowLine(
-						"Found install path for [#slug#]: [#installPaths[slug]#] in box.json, so not looking for a BoxLang server home to override."
+						"Found install path for [#slug#]: [#installPaths[ slug ]#] in box.json, so not looking for a BoxLang server home to override."
 					)
 					.toConsole();
 				return;
@@ -271,7 +275,7 @@ component {
 			}
 
 			// Parse Java version from output using regex
-			versionSearch = javaVersionOutput.reFindNoCase(
+			var versionSearch = javaVersionOutput.reFindNoCase(
 				"""([0-9]+\.[0-9]+\.[0-9]+)""",
 				1,
 				true
