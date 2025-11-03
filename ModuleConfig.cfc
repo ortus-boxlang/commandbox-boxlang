@@ -24,7 +24,7 @@ component {
 	function configure(){
 		variables.settings = {
 			"CLIBoxLangVersion" : "",
-			"CLIVerbose" : false
+			"CLIVerbose"        : false
 		};
 	}
 
