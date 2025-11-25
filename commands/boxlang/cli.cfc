@@ -135,64 +135,62 @@ component {
 		return boxlangLatestVersion;
 	}
 
-	private function setBoxlangHomeToServer() {
-			var systemSettings = wirebox.getInstance( "SystemSettings" );
-			var configService  = wirebox.getInstance( "ConfigService" );
-			var serverService  = wirebox.getInstance( "ServerService" );
-			var shell  = wirebox.getInstance( "Shell" );
+	private function setBoxlangHomeToServer(){
+		var systemSettings = wirebox.getInstance( "SystemSettings" );
+		var configService  = wirebox.getInstance( "ConfigService" );
+		var serverService  = wirebox.getInstance( "ServerService" );
+		var shell          = wirebox.getInstance( "Shell" );
 
-			var boxLangHome = "";
+		var boxLangHome = "";
 
-			// Get environment variables and server information
-			var serverInfo                    = {};
-			var interceptData_serverInfo_name = systemSettings.getSystemSetting( "interceptData.SERVERINFO.name", "" );
+		// Get environment variables and server information
+		var serverInfo                    = {};
+		var interceptData_serverInfo_name = systemSettings.getSystemSetting( "interceptData.SERVERINFO.name", "" );
 
-			// Strategy 1: Check if we're in single server mode
-			if ( configService.getSetting( "server.singleServerMode", false ) && serverService.getServers().count() ) {
-				serverInfo  = serverService.getFirstServer();
-				boxLangHome = serverInfo.serverHomeDirectory & "/WEB-INF/boxlang/";
-				// Strategy 2: Use server specified in environment variable
-			} else if ( interceptData_serverInfo_name != "" ) {
-				serverInfo = serverService.getServerInfoByName( interceptData_serverInfo_name );
-				// Validate that the specified server is actually a BoxLang server
-				if ( !( serverInfo.CFengine contains "boxlang" ) ) {
-					return;
-				}
-				boxLangHome = serverInfo.serverHomeDirectory & "/WEB-INF/boxlang/";
-			} else {
-				// Strategy 3: Search for BoxLang server matching current working directory
-				var webroot = fileSystemUtil.resolvePath( shell.getPWD() );
-				var servers = serverService.getServers();
-				for ( var serverID in servers ) {
-					var thisServerInfo = servers[ serverID ];
-					if (
-						fileSystemUtil.resolvePath(
-							path           = thisServerInfo.webroot,
-							forceDirectory = true
-						) == webroot
-						&& thisServerInfo.CFengine contains "boxlang"
-					) {
-						serverInfo  = thisServerInfo;
-						boxLangHome = serverInfo.serverHomeDirectory & "/WEB-INF/boxlang/";
-						break;
-					}
-				}
-				// Fallback: resolve server details for current directory
-				if ( !serverInfo.count() ) {
-					var serverDetails = serverService.resolveServerDetails( {} );
-					serverInfo        = serverDetails.serverInfo;
-					if ( !serverDetails.serverIsNew && ( serverInfo.CFengine contains "boxlang" ) ) {
-						boxLangHome = serverInfo.serverHomeDirectory & "/WEB-INF/boxlang/";
-					}
+		// Strategy 1: Check if we're in single server mode
+		if ( configService.getSetting( "server.singleServerMode", false ) && serverService.getServers().count() ) {
+			serverInfo  = serverService.getFirstServer();
+			boxLangHome = serverInfo.serverHomeDirectory & "/WEB-INF/boxlang/";
+			// Strategy 2: Use server specified in environment variable
+		} else if ( interceptData_serverInfo_name != "" ) {
+			serverInfo = serverService.getServerInfoByName( interceptData_serverInfo_name );
+			// Validate that the specified server is actually a BoxLang server
+			if ( !( serverInfo.CFengine contains "boxlang" ) ) {
+				return;
+			}
+			boxLangHome = serverInfo.serverHomeDirectory & "/WEB-INF/boxlang/";
+		} else {
+			// Strategy 3: Search for BoxLang server matching current working directory
+			var webroot = fileSystemUtil.resolvePath( shell.getPWD() );
+			var servers = serverService.getServers();
+			for ( var serverID in servers ) {
+				var thisServerInfo = servers[ serverID ];
+				if (
+					fileSystemUtil.resolvePath(
+						path           = thisServerInfo.webroot,
+						forceDirectory = true
+					) == webroot
+					&& thisServerInfo.CFengine contains "boxlang"
+				) {
+					serverInfo  = thisServerInfo;
+					boxLangHome = serverInfo.serverHomeDirectory & "/WEB-INF/boxlang/";
+					break;
 				}
 			}
-			if ( boxLangHome != "" ) {
-				// Set BOXLANG_HOME environment variable
-				systemSettings.setSystemSetting( "BOXLANG_HOME", boxLangHome );
-				print
-					.greenLine( "Set BOXLANG_HOME to [#boxLangHome#] for BoxLang CLI execution." )
-					.toConsole();
+			// Fallback: resolve server details for current directory
+			if ( !serverInfo.count() ) {
+				var serverDetails = serverService.resolveServerDetails( {} );
+				serverInfo        = serverDetails.serverInfo;
+				if ( !serverDetails.serverIsNew && ( serverInfo.CFengine contains "boxlang" ) ) {
+					boxLangHome = serverInfo.serverHomeDirectory & "/WEB-INF/boxlang/";
+				}
 			}
+		}
+		if ( boxLangHome != "" ) {
+			// Set BOXLANG_HOME environment variable
+			systemSettings.setSystemSetting( "BOXLANG_HOME", boxLangHome );
+			print.greenLine( "Set BOXLANG_HOME to [#boxLangHome#] for BoxLang CLI execution." ).toConsole();
+		}
 	}
 
 }
