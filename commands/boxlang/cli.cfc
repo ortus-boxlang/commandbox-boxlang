@@ -100,7 +100,10 @@ component {
 		setBoxlangHomeToServer();
 		// Prepend BOXLANG_HOME environment variable to command for Unix/Linux
 		if ( !fileSystemUtil.isWindows() ) {
-			cmd = "BOXLANG_HOME=""#getSystemSetting( key="BOXLANG_HOME", defaultValue="" )#"" " & cmd;
+			cmd = "BOXLANG_HOME=""#getSystemSetting(
+				key = "BOXLANG_HOME",
+				defaultValue = ""
+			)#"" " & cmd;
 		}
 
 		print.toConsole();
