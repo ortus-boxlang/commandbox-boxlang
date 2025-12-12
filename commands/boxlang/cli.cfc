@@ -43,11 +43,8 @@ component {
 		javaInstallPath &= "/bin/java";
 		if ( verbose ) print.line( "Using Java from: " & javaInstallPath );
 
-		if ( fileSystemUtil.isWindows() ) {
-			var cmd = """#javaInstallPath#""";
-		} else {
-			var cmd = "#fileSystemUtil.getNativeShell()# ""#javaInstallPath#""";
-		}
+		var cmd = """#javaInstallPath#""";
+
 
 		var jarInstallDir = expandPath( "/commandbox-boxlang/lib/boxlang/" );
 

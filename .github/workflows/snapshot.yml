@@ -24,7 +24,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Auto-format
         uses: Ortus-Solutions/commandbox-action@v1.0.3
@@ -32,7 +32,7 @@ jobs:
           cmd: run-script format
 
       - name: Commit Format Changes
-        uses: stefanzweifel/git-auto-commit-action@v6
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: Apply cfformat changes
 
