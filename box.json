@@ -1,7 +1,7 @@
 {
     "name":"CommandBox BoxLang CLI Tools",
     "author":"Brad Wood",
-    "version":"1.20.0",
+    "version":"1.21.0",
     "location":"https://downloads.ortussolutions.com/ortussolutions/commandbox-modules/commandbox-boxlang/@build.version@/commandbox-boxlang-@build.version@.zip",
     "slug":"commandbox-boxlang",
     "shortDescription":"CommandBox BoxLang CLI Tools",
