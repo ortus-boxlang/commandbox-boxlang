@@ -74,12 +74,12 @@ component {
 		}
 	}
 
-	private function getJarPath() {
+	private function getJarPath(){
 		var localBoxlangJarPath = getSystemSetting( "BOXLANG_JAR_PATH", "" );
 		if ( len( localBoxlangJarPath ) ) {
 			return localBoxlangJarPath;
 		}
-		
+
 		var jarInstallDir = expandPath( "/commandbox-boxlang/lib/boxlang/" );
 
 		if ( len( moduleSettings.CLIBoxLangVersion ?: "" ) ) {
@@ -197,20 +197,26 @@ component {
 			// Set BOXLANG_HOME environment variable
 			systemSettings.setSystemSetting( "BOXLANG_HOME", boxLangHome );
 			print.greenLine( "Set BOXLANG_HOME to [#boxLangHome#] for BoxLang CLI execution." ).toConsole();
-			var WEBINFJarDir = boxLangHome & "../lib/";
+			var WEBINFJarDir        = boxLangHome & "../lib/";
 			var localBoxlangJarPath = "";
-			var jars = directoryList( path = WEBINFJarDir, filter = "*.jar" );
+			var jars                = directoryList(
+				path   = WEBINFJarDir,
+				filter = "*.jar"
+			);
 			for ( var jar in jars ) {
-				if( jar contains "boxlang" ) {
+				if ( jar contains "boxlang" ) {
 					localBoxlangJarPath = getCanonicalPath( jar );
 					break;
 				}
 			}
-			if( len( localBoxlangJarPath ) ) {
+			if ( len( localBoxlangJarPath ) ) {
 				print.greenLine( "Using BoxLang jar [#localBoxlangJarPath#]" ).toConsole();
 				// Add in the runwar jar from the server using the path class path separator
 				localBoxlangJarPath = localBoxlangJarPath & server.separator.path & serverInfo.runwarJarPath;
-				systemSettings.setSystemSetting( "BOXLANG_JAR_PATH", localBoxlangJarPath );
+				systemSettings.setSystemSetting(
+					"BOXLANG_JAR_PATH",
+					localBoxlangJarPath
+				);
 			}
 		}
 	}
