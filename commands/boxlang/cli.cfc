@@ -45,7 +45,41 @@ component {
 
 		var cmd = """#javaInstallPath#""";
 
+		setBoxlangHomeToServer();
+		var localBoxlangJarPath = getJarPath();
 
+		cmd &= " -cp ""#localBoxlangJarPath#"" ortus.boxlang.runtime.BoxRunner";
+
+		var i               = 0;
+		var originalCommand = commandService
+			.getCallStack()
+			.first()
+			.commandInfo
+			.ORIGINALLINE
+			.replace( "boxlang cli", "" );
+		cmd &= " " & originalCommand;
+
+
+		print.toConsole();
+		var output = command( "run" )
+			.params( cmd )
+			// Try to contain the output if we're in an interactive job and there are arguments (no args opens the boxlang shell)
+			.run(
+				echo         = verbose,
+				returnOutput = ( job.isActive() && arguments.count() )
+			);
+
+		if ( job.isActive() && arguments.count() ) {
+			print.text( output );
+		}
+	}
+
+	private function getJarPath() {
+		var localBoxlangJarPath = getSystemSetting( "BOXLANG_JAR_PATH", "" );
+		if ( len( localBoxlangJarPath ) ) {
+			return localBoxlangJarPath;
+		}
+		
 		var jarInstallDir = expandPath( "/commandbox-boxlang/lib/boxlang/" );
 
 		if ( len( moduleSettings.CLIBoxLangVersion ?: "" ) ) {
@@ -86,31 +120,7 @@ component {
 				verbose   = verbose
 			);
 		}
-		cmd &= " -jar ""#localBoxlangJarPath#""";
-
-		var i               = 0;
-		var originalCommand = commandService
-			.getCallStack()
-			.first()
-			.commandInfo
-			.ORIGINALLINE
-			.replace( "boxlang cli", "" );
-		cmd &= " " & originalCommand;
-
-		setBoxlangHomeToServer();
-
-		print.toConsole();
-		var output = command( "run" )
-			.params( cmd )
-			// Try to contain the output if we're in an interactive job and there are arguments (no args opens the boxlang shell)
-			.run(
-				echo         = verbose,
-				returnOutput = ( job.isActive() && arguments.count() )
-			);
-
-		if ( job.isActive() && arguments.count() ) {
-			print.text( output );
-		}
+		return localBoxlangJarPath;
 	}
 
 	function getBoxLangLatestVersion(){
@@ -187,6 +197,21 @@ component {
 			// Set BOXLANG_HOME environment variable
 			systemSettings.setSystemSetting( "BOXLANG_HOME", boxLangHome );
 			print.greenLine( "Set BOXLANG_HOME to [#boxLangHome#] for BoxLang CLI execution." ).toConsole();
+			var WEBINFJarDir = boxLangHome & "../lib/";
+			var localBoxlangJarPath = "";
+			var jars = directoryList( path = WEBINFJarDir, filter = "*.jar" );
+			for ( var jar in jars ) {
+				if( jar contains "boxlang" ) {
+					localBoxlangJarPath = getCanonicalPath( jar );
+					break;
+				}
+			}
+			if( len( localBoxlangJarPath ) ) {
+				print.greenLine( "Using BoxLang jar [#localBoxlangJarPath#]" ).toConsole();
+				// Add in the runwar jar from the server using the path class path separator
+				localBoxlangJarPath = localBoxlangJarPath & server.separator.path & serverInfo.runwarJarPath;
+				systemSettings.setSystemSetting( "BOXLANG_JAR_PATH", localBoxlangJarPath );
+			}
 		}
 	}
 
