@@ -223,6 +223,36 @@ component {
 	}
 
 	/**
+	 * Interceptor for pre-uninstallation events
+	 *
+	 * Removes the executable alias when a BoxLang module is being uninstalled.
+	 *
+	 * Intercept data:
+	 * - uninstallDirectory
+	 * - uninstallArgs
+	 */
+	function preUninstall( Struct interceptData ){
+		// Only process if ExecutableService is available for backwards compat
+		if ( !wirebox.getBinder().mappingExists( "ExecutableService@system-commands" ) ) {
+			return;
+		}
+		var packageService = wirebox.getInstance( "packageService" );
+		var boxJSON        = packageService.readPackageDescriptor( interceptData.uninstallDirectory );
+		if ( boxJSON.type == "boxlang-modules" ) {
+			var executable = trim( boxJSON.boxlang.executable ?: "" );
+			if ( len( executable ) ) {
+				wirebox
+					.getInstance(
+						name          = "CommandDSL",
+						initArguments = { name : "executable delete" }
+					)
+					.params( executable )
+					.run();
+			}
+		}
+	}
+
+	/**
 	 * Interceptor for server start events
 	 *
 	 * This method is automatically called when a server is starting in CommandBox.
