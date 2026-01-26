@@ -190,6 +190,33 @@ component {
 	}
 
 	/**
+	 * Interceptor for post-installation events
+	 * 
+	 * Intercept data:
+	 * - installArgs
+	 * - installDirectory
+	 * - system (shellWillReload)
+	 */
+	function postInstall( Struct interceptData ){
+		// Only process if ExecutableService is available for backwards compat
+		if( !wirebox.getBinder().mappingExists( "ExecutableService@system-commands" ) ) {
+			return;
+		}
+		var packageService = wirebox.getInstance( "packageService" );
+		var boxJSON = packageService.readPackageDescriptor( interceptData.installDirectory );
+		if( boxJSON.type == "boxlang-modules" ) {
+			var executable = trim( boxJSON.boxlang.executable ?: '' );
+			if( len( executable ) ) {
+				var moduleName = boxJSON.boxlang.moduleName ?: boxJSON.slug;
+				wirebox.getInstance( name="CommandDSL", initArguments={ name : "executable create" } )
+					.params( alias = executable, commandText = "boxlang module:#trim( moduleName )#" )
+					.run();
+			}
+
+		}
+	}
+
+	/**
 	 * Interceptor for server start events
 	 *
 	 * This method is automatically called when a server is starting in CommandBox.
