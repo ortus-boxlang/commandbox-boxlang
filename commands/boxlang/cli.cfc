@@ -111,6 +111,7 @@ component {
 		var boxlangFileName     = "boxlang-#boxLangVersion#.jar";
 		var boxlangDownloadURL  = "https://downloads.ortussolutions.com/ortussolutions/boxlang/#urlEncode( boxLangVersion )#/#urlEncode( boxlangFileName )#";
 		var localBoxlangJarPath = "#jarInstallDir#/boxlang-#boxLangVersion#/#boxlangFileName#";
+		var verbose             = moduleSettings.CLIVerbose ?: false;
 		if ( !fileExists( localBoxlangJarPath ) ) {
 			if ( verbose ) print.line( "Downloading BoxLang jar [#boxlangVersion#]..." );
 			packageService.installPackage(
