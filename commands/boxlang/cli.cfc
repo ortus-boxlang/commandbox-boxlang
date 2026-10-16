@@ -337,9 +337,7 @@ component {
 		} catch ( any e ) {
 			// Fallback to command( "run" ) if ProcessBuilder failed
 			try {
-				output = command( "run" )
-					.params( """#arguments.javaBin#"" -version" )
-					.run( returnOutput = true );
+				output = command( "run" ).params( """#arguments.javaBin#"" -version" ).run( returnOutput = true );
 			} catch ( any e2 ) {
 				return 0;
 			}
@@ -351,7 +349,7 @@ component {
 
 		// Look for version pattern: version "21.0.12.1", version "21", version "1.8.0_351"
 		var versionSearch = output.reFindNoCase(
-			'version\s+"([0-9]+)(\.([0-9]+))?',
+			"version\s+""([0-9]+)(\.([0-9]+))?",
 			1,
 			true
 		);
@@ -365,11 +363,7 @@ component {
 		}
 
 		// Fallback: look for first quoted version string like "21.0.1"
-		var fallbackSearch = output.reFindNoCase(
-			"""([0-9]+(\.[0-9]+)*)""",
-			1,
-			true
-		);
+		var fallbackSearch = output.reFindNoCase( """([0-9]+(\.[0-9]+)*)""", 1, true );
 		if ( fallbackSearch.pos[ 1 ] && fallbackSearch.match.len() > 1 ) {
 			var versionStr = fallbackSearch.match[ 2 ];
 			var firstNum   = val( versionStr.listGetAt( 1, "." ) );
@@ -421,7 +415,12 @@ component {
 			try {
 				var lookupCmd    = isWindows ? "where.exe java" : "which java";
 				var lookupOutput = command( "run" ).params( lookupCmd ).run( returnOutput = true );
-				for ( var line in listToArray( trim( lookupOutput ), chr( 10 ) & chr( 13 ) ) ) {
+				for (
+					var line in listToArray(
+						trim( lookupOutput ),
+						chr( 10 ) & chr( 13 )
+					)
+				) {
 					var trimmedLine = trim( line );
 					if ( len( trimmedLine ) && fileExists( trimmedLine ) ) {
 						var canonical = createObject( "java", "java.io.File" ).init( trimmedLine ).getCanonicalPath();
