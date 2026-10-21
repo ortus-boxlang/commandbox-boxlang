@@ -239,6 +239,7 @@ component {
 			}
 			overrideCandidate &= "bin/" & javaExe;
 			if ( fileExists( overrideCandidate ) ) {
+				overrideCandidate = getCanonicalPath( overrideCandidate );
 				var overrideMajor = getJavaMajorVersion( overrideCandidate );
 				if ( overrideMajor >= 21 ) {
 					if ( arguments.verbose ) {
@@ -276,7 +277,7 @@ component {
 				}
 			}
 		} catch ( any e ) {
-			// Ignore if getJREExecutable fails
+			logger.error( "Error checking CommandBox host JRE: #e.message#", e );
 		}
 
 		// 4. Check CommandBox cached/downloaded serverJREs
@@ -319,28 +320,10 @@ component {
 	private numeric function getJavaMajorVersion( required string javaBin ){
 		var output = "";
 		try {
-			var pb = createObject( "java", "java.lang.ProcessBuilder" ).init( [ arguments.javaBin, "-version" ] );
-			pb.redirectErrorStream( true );
-			var proc   = pb.start();
-			var reader = createObject( "java", "java.io.BufferedReader" ).init(
-				createObject( "java", "java.io.InputStreamReader" ).init( proc.getInputStream() )
-			);
-			var sb   = createObject( "java", "java.lang.StringBuilder" ).init();
-			var line = reader.readLine();
-			while ( !isNull( line ) ) {
-				sb.append( line ).append( chr( 10 ) );
-				line = reader.readLine();
-			}
-			proc.waitFor();
-			reader.close();
-			output = sb.toString();
+			output = command( "run" ).params( """#arguments.javaBin#"" -version" ).run( returnOutput = true );
 		} catch ( any e ) {
-			// Fallback to command( "run" ) if ProcessBuilder failed
-			try {
-				output = command( "run" ).params( """#arguments.javaBin#"" -version" ).run( returnOutput = true );
-			} catch ( any e2 ) {
-				return 0;
-			}
+			logger.error( "Error checking Java version for [#arguments.javaBin#]: #e.message#", e );
+			return 0;
 		}
 
 		if ( !len( trim( output ) ) ) {
@@ -387,26 +370,21 @@ component {
 		var isWindows = fileSystemUtil.isWindows();
 		var javaExe   = isWindows ? "java.exe" : "java";
 		var pathSep   = isWindows ? ";" : ":";
-		var system    = createObject( "java", "java.lang.System" );
-		var rawPath   = system.getenv( "PATH" ) ?: "";
-		if ( !len( rawPath ) ) {
-			rawPath = getSystemSetting( "PATH", "" );
-		}
+		var rawPath   = getSystemSetting( "PATH", "" );
 
 		var pathDirs = listToArray( rawPath, pathSep );
 		for ( var dir in pathDirs ) {
 			var candidatePath = trim( dir ) & "/" & javaExe;
-			var candidateFile = createObject( "java", "java.io.File" ).init( candidatePath );
 			try {
-				if ( candidateFile.exists() && candidateFile.canExecute() && !candidateFile.isDirectory() ) {
-					var canonical = candidateFile.getCanonicalPath();
+				if ( fileExists( candidatePath ) && ( getFileInfo( candidatePath ).canExecute ?: true ) ) {
+					var canonical = getCanonicalPath( candidatePath );
 					if ( !seen.keyExists( canonical ) ) {
 						seen[ canonical ] = true;
 						results.append( canonical );
 					}
 				}
 			} catch ( any e ) {
-				// Ignore access permissions errors
+				logger.error( "Error checking candidate Java path [#candidatePath#]: #e.message#", e );
 			}
 		}
 
@@ -423,7 +401,7 @@ component {
 				) {
 					var trimmedLine = trim( line );
 					if ( len( trimmedLine ) && fileExists( trimmedLine ) ) {
-						var canonical = createObject( "java", "java.io.File" ).init( trimmedLine ).getCanonicalPath();
+						var canonical = getCanonicalPath( trimmedLine );
 						if ( !seen.keyExists( canonical ) ) {
 							seen[ canonical ] = true;
 							results.append( canonical );
@@ -431,7 +409,7 @@ component {
 					}
 				}
 			} catch ( any e ) {
-				// Ignore lookup failure
+				logger.error( "Error resolving java executable via [#lookupCmd#]: #e.message#", e );
 			}
 		}
 
