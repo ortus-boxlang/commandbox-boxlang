@@ -277,7 +277,10 @@ component {
 				}
 			}
 		} catch ( any e ) {
-			logger.error( "Error checking CommandBox host JRE: #e.message#", e );
+			logger.error(
+				"Error checking CommandBox host JRE: #e.message#",
+				e
+			);
 		}
 
 		// 4. Check CommandBox cached/downloaded serverJREs
@@ -322,7 +325,10 @@ component {
 		try {
 			output = command( "run" ).params( """#arguments.javaBin#"" -version" ).run( returnOutput = true );
 		} catch ( any e ) {
-			logger.error( "Error checking Java version for [#arguments.javaBin#]: #e.message#", e );
+			logger.error(
+				"Error checking Java version for [#arguments.javaBin#]: #e.message#",
+				e
+			);
 			return 0;
 		}
 
@@ -384,7 +390,10 @@ component {
 					}
 				}
 			} catch ( any e ) {
-				logger.error( "Error checking candidate Java path [#candidatePath#]: #e.message#", e );
+				logger.error(
+					"Error checking candidate Java path [#candidatePath#]: #e.message#",
+					e
+				);
 			}
 		}
 
@@ -409,7 +418,10 @@ component {
 					}
 				}
 			} catch ( any e ) {
-				logger.error( "Error resolving java executable via [#lookupCmd#]: #e.message#", e );
+				logger.error(
+					"Error resolving java executable via [#lookupCmd#]: #e.message#",
+					e
+				);
 			}
 		}
 
