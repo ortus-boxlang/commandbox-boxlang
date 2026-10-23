@@ -43,7 +43,6 @@ component {
 			.replace( "boxlang cli", "" );
 		cmd &= " " & originalCommand;
 
-
 		print.toConsole();
 		var output = command( "run" )
 			.params( cmd )
@@ -224,12 +223,22 @@ component {
 		var javaExe   = isWindows ? "java.exe" : "java";
 
 		// 1. Check explicit setting or environment variable overrides
-		var overrideHome = moduleSettings.CLIJavaHome ?: "";
+		var overrideHome   = moduleSettings.CLIJavaHome ?: "";
+		var overrideSource = "module setting CLIJavaHome";
 		if ( !len( overrideHome ) ) {
 			overrideHome = getSystemSetting( "BOXLANG_JAVA_HOME", "" );
+			if ( len( overrideHome ) ) {
+				overrideSource = "environment variable BOXLANG_JAVA_HOME";
+			}
 		}
+		// JAVA_HOME is a generic fallback, so skip it silently when it isn't usable
+		var overrideIsFallback = false;
 		if ( !len( overrideHome ) ) {
 			overrideHome = getSystemSetting( "JAVA_HOME", "" );
+			if ( len( overrideHome ) ) {
+				overrideSource     = "environment variable JAVA_HOME";
+				overrideIsFallback = true;
+			}
 		}
 
 		if ( len( overrideHome ) ) {
@@ -243,10 +252,10 @@ component {
 				var overrideMajor = getJavaMajorVersion( overrideCandidate );
 				if ( overrideMajor >= 21 ) {
 					if ( arguments.verbose ) {
-						print.line( "Using Java from override [#overrideCandidate#] (version #overrideMajor#)" );
+						print.line( "Using Java from #overrideSource# [#overrideCandidate#] (version #overrideMajor#)" );
 					}
 					return overrideCandidate;
-				} else if ( arguments.verbose ) {
+				} else if ( arguments.verbose && !overrideIsFallback ) {
 					print.line( "Java override [#overrideCandidate#] is version [#overrideMajor#], but BoxLang requires Java 21+." );
 				}
 			}
