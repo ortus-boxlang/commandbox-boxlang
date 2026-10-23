@@ -23,24 +23,8 @@ component {
 	property name="moduleSettings"  inject="box:moduleSettings:commandbox-boxlang";
 
 	function run(){
-		var verbose        = moduleSettings.CLIVerbose ?: false;
-		var javaVersion    = "openjdk21";
-		var availableJavas = javaService
-			.listJavaInstalls()
-			.filter( ( jInstall ) => jInstall contains javaVersion )
-			.map( ( name, deets ) => {
-				deets.justJavaVersion = name.listLast( "-" )
-				return deets;
-			} )
-			.valueArray()
-			.sort( ( a, b ) => semanticVersion.compare( b.justJavaVersion, a.justJavaVersion ) );
-		if ( availableJavas.len() ) {
-			var thisJava        = availableJavas.first();
-			var javaInstallPath = thisJava.directory & "/" & thisJava.name;
-		} else {
-			var javaInstallPath = javaService.getJavaInstallPath( javaVersion, false );
-		}
-		javaInstallPath &= "/bin/java";
+		var verbose         = moduleSettings.CLIVerbose ?: false;
+		var javaInstallPath = locateJavaBinary( verbose );
 		if ( verbose ) print.line( "Using Java from: " & javaInstallPath );
 
 		var cmd = """#javaInstallPath#""";
@@ -58,7 +42,6 @@ component {
 			.ORIGINALLINE
 			.replace( "boxlang cli", "" );
 		cmd &= " " & originalCommand;
-
 
 		print.toConsole();
 		var output = command( "run" )
@@ -220,6 +203,238 @@ component {
 				);
 			}
 		}
+	}
+
+	/**
+	 * Locate an available Java executable on the host machine or CommandBox with version >= 21.
+	 *
+	 * Order of resolution:
+	 * 1. CLIJavaHome module setting or BOXLANG_JAVA_HOME / JAVA_HOME environment variable
+	 * 2. Host system PATH
+	 * 3. CommandBox host JVM
+	 * 4. CommandBox downloaded serverJREs (javaService.listJavaInstalls())
+	 * 5. Download openjdk21 via javaService.getJavaInstallPath() as fallback
+	 *
+	 * @verbose Whether to output detailed resolution messages
+	 * @return Full path to the java executable
+	 */
+	private string function locateJavaBinary( boolean verbose = false ){
+		var isWindows = fileSystemUtil.isWindows();
+		var javaExe   = isWindows ? "java.exe" : "java";
+
+		// 1. Check explicit setting or environment variable overrides
+		var overrideHome   = moduleSettings.CLIJavaHome ?: "";
+		var overrideSource = "module setting CLIJavaHome";
+		if ( !len( overrideHome ) ) {
+			overrideHome = getSystemSetting( "BOXLANG_JAVA_HOME", "" );
+			if ( len( overrideHome ) ) {
+				overrideSource = "environment variable BOXLANG_JAVA_HOME";
+			}
+		}
+		// JAVA_HOME is a generic fallback, so skip it silently when it isn't usable
+		var overrideIsFallback = false;
+		if ( !len( overrideHome ) ) {
+			overrideHome = getSystemSetting( "JAVA_HOME", "" );
+			if ( len( overrideHome ) ) {
+				overrideSource     = "environment variable JAVA_HOME";
+				overrideIsFallback = true;
+			}
+		}
+
+		if ( len( overrideHome ) ) {
+			var overrideCandidate = trim( overrideHome );
+			if ( !overrideCandidate.endsWith( "/" ) && !overrideCandidate.endsWith( "\" ) ) {
+				overrideCandidate &= "/";
+			}
+			overrideCandidate &= "bin/" & javaExe;
+			if ( fileExists( overrideCandidate ) ) {
+				overrideCandidate = getCanonicalPath( overrideCandidate );
+				var overrideMajor = getJavaMajorVersion( overrideCandidate );
+				if ( overrideMajor >= 21 ) {
+					if ( arguments.verbose ) {
+						print.line( "Using Java from #overrideSource# [#overrideCandidate#] (version #overrideMajor#)" );
+					}
+					return overrideCandidate;
+				} else if ( arguments.verbose && !overrideIsFallback ) {
+					print.line( "Java override [#overrideCandidate#] is version [#overrideMajor#], but BoxLang requires Java 21+." );
+				}
+			}
+		}
+
+		// 2. Check host system PATH
+		var pathCandidates = findJavaInPath();
+		for ( var candidate in pathCandidates ) {
+			var majorVersion = getJavaMajorVersion( candidate );
+			if ( majorVersion >= 21 ) {
+				if ( arguments.verbose ) {
+					print.line( "Found Java on host PATH at [#candidate#] (version #majorVersion#)" );
+				}
+				return candidate;
+			}
+		}
+
+		// 3. Check CommandBox's current JVM
+		try {
+			var currentJava = fileSystemUtil.getJREExecutable();
+			if ( fileExists( currentJava ) ) {
+				var currentMajor = getJavaMajorVersion( currentJava );
+				if ( currentMajor >= 21 ) {
+					if ( arguments.verbose ) {
+						print.line( "Using CommandBox host JVM at [#currentJava#] (version #currentMajor#)" );
+					}
+					return currentJava;
+				}
+			}
+		} catch ( any e ) {
+			logger.error(
+				"Error checking CommandBox host JRE: #e.message#",
+				e
+			);
+		}
+
+		// 4. Check CommandBox cached/downloaded serverJREs
+		var javaVersion    = "openjdk21";
+		var availableJavas = javaService
+			.listJavaInstalls()
+			.filter( ( jInstall ) => jInstall contains javaVersion )
+			.map( ( name, deets ) => {
+				deets.justJavaVersion = name.listLast( "-" );
+				return deets;
+			} )
+			.valueArray()
+			.sort( ( a, b ) => semanticVersion.compare( b.justJavaVersion, a.justJavaVersion ) );
+
+		if ( availableJavas.len() ) {
+			var thisJava       = availableJavas.first();
+			var cachedJavaPath = thisJava.directory & "/" & thisJava.name & "/bin/" & javaExe;
+			if ( fileExists( cachedJavaPath ) ) {
+				if ( arguments.verbose ) {
+					print.line( "Using CommandBox cached Java at [#cachedJavaPath#]" );
+				}
+				return cachedJavaPath;
+			}
+		}
+
+		// 5. Fallback: Download OpenJDK 21 via CommandBox JavaService
+		if ( arguments.verbose ) {
+			print.line( "No Java 21+ found on host or cache. Downloading OpenJDK 21..." );
+		}
+		var downloadPath = javaService.getJavaInstallPath( javaVersion, arguments.verbose );
+		return downloadPath & "/bin/" & javaExe;
+	}
+
+	/**
+	 * Determine the major version of a Java executable binary.
+	 *
+	 * @javaBin Full path to the java executable
+	 * @return Numeric major version (e.g. 21, 17, 8) or 0 if unable to detect
+	 */
+	private numeric function getJavaMajorVersion( required string javaBin ){
+		var output = "";
+		try {
+			output = command( "run" ).params( """#arguments.javaBin#"" -version" ).run( returnOutput = true );
+		} catch ( any e ) {
+			logger.error(
+				"Error checking Java version for [#arguments.javaBin#]: #e.message#",
+				e
+			);
+			return 0;
+		}
+
+		if ( !len( trim( output ) ) ) {
+			return 0;
+		}
+
+		// Look for version pattern: version "21.0.12.1", version "21", version "1.8.0_351"
+		var versionSearch = output.reFindNoCase(
+			"version\s+""([0-9]+)(\.([0-9]+))?",
+			1,
+			true
+		);
+		if ( versionSearch.pos[ 1 ] && versionSearch.match.len() > 1 ) {
+			var major = val( versionSearch.match[ 2 ] );
+			// Handle legacy 1.8.x versioning where major is 8
+			if ( major == 1 && versionSearch.match.len() > 3 ) {
+				major = val( versionSearch.match[ 4 ] );
+			}
+			return major;
+		}
+
+		// Fallback: look for first quoted version string like "21.0.1"
+		var fallbackSearch = output.reFindNoCase( """([0-9]+(\.[0-9]+)*)""", 1, true );
+		if ( fallbackSearch.pos[ 1 ] && fallbackSearch.match.len() > 1 ) {
+			var versionStr = fallbackSearch.match[ 2 ];
+			var firstNum   = val( versionStr.listGetAt( 1, "." ) );
+			if ( firstNum == 1 && versionStr.listLen( "." ) > 1 ) {
+				return val( versionStr.listGetAt( 2, "." ) );
+			}
+			return firstNum;
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Find unique executable Java binaries from the host system PATH.
+	 *
+	 * @return Array of canonical paths to java binaries
+	 */
+	private array function findJavaInPath(){
+		var results   = [];
+		var seen      = {};
+		var isWindows = fileSystemUtil.isWindows();
+		var javaExe   = isWindows ? "java.exe" : "java";
+		var pathSep   = isWindows ? ";" : ":";
+		var rawPath   = getSystemSetting( "PATH", "" );
+
+		var pathDirs = listToArray( rawPath, pathSep );
+		for ( var dir in pathDirs ) {
+			var candidatePath = trim( dir ) & "/" & javaExe;
+			try {
+				if ( fileExists( candidatePath ) && ( getFileInfo( candidatePath ).canExecute ?: true ) ) {
+					var canonical = getCanonicalPath( candidatePath );
+					if ( !seen.keyExists( canonical ) ) {
+						seen[ canonical ] = true;
+						results.append( canonical );
+					}
+				}
+			} catch ( any e ) {
+				logger.error(
+					"Error checking candidate Java path [#candidatePath#]: #e.message#",
+					e
+				);
+			}
+		}
+
+		// Fallback to which / where command if PATH scan yielded no results
+		if ( !results.len() ) {
+			try {
+				var lookupCmd    = isWindows ? "where.exe java" : "which java";
+				var lookupOutput = command( "run" ).params( lookupCmd ).run( returnOutput = true );
+				for (
+					var line in listToArray(
+						trim( lookupOutput ),
+						chr( 10 ) & chr( 13 )
+					)
+				) {
+					var trimmedLine = trim( line );
+					if ( len( trimmedLine ) && fileExists( trimmedLine ) ) {
+						var canonical = getCanonicalPath( trimmedLine );
+						if ( !seen.keyExists( canonical ) ) {
+							seen[ canonical ] = true;
+							results.append( canonical );
+						}
+					}
+				}
+			} catch ( any e ) {
+				logger.error(
+					"Error resolving java executable via [#lookupCmd#]: #e.message#",
+					e
+				);
+			}
+		}
+
+		return results;
 	}
 
 }
