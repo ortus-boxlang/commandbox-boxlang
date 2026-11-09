@@ -32,7 +32,7 @@ component {
 		var boxLangHome         = resolveBoxLangHome();
 		var localBoxlangJarPath = getJarPath();
 
-		cmd &= " -cp ""#localBoxlangJarPath#"" ortus.boxlang.runtime.BoxRunner --bx-home ""#boxLangHome#"";
+		cmd &= " -cp ""#localBoxlangJarPath#"" ortus.boxlang.runtime.BoxRunner --bx-home ""#boxLangHome#""";
 
 		var i               = 0;
 		var originalCommand = commandService
