@@ -10,3 +10,4 @@ testbox/**
 changelog-latest.md
 lib/runwar-jakarta.jar
 /lib
+/.vscode

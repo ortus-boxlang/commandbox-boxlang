@@ -29,10 +29,10 @@ component {
 
 		var cmd = """#javaInstallPath#""";
 
-		setBoxlangHomeToServer();
+		var boxLangHome         = resolveBoxLangHome();
 		var localBoxlangJarPath = getJarPath();
 
-		cmd &= " -cp ""#localBoxlangJarPath#"" ortus.boxlang.runtime.BoxRunner";
+		cmd &= " -cp ""#localBoxlangJarPath#"" ortus.boxlang.runtime.BoxRunner --bx-home ""#boxLangHome#"";
 
 		var i               = 0;
 		var originalCommand = commandService
@@ -126,7 +126,31 @@ component {
 		return boxlangLatestVersion;
 	}
 
-	private function setBoxlangHomeToServer(){
+	/**
+	 * Resolve the BoxLang home directory to use for the BoxRunner subprocess.
+	 *
+	 * Resolution order:
+	 * 1. BoxLang server home discovered by setBoxlangHomeToServer()
+	 * 2. BOXLANG_HOME environment variable
+	 * 3. Default ~/.boxlang inside the user's home directory
+	 *
+	 * @return The resolved BoxLang home directory path
+	 */
+	private string function resolveBoxLangHome(){
+		var boxLangHome = setBoxlangHomeToServer();
+
+		if ( !len( boxLangHome ) ) {
+			boxLangHome = getSystemSetting( "BOXLANG_HOME", "" );
+		}
+
+		if ( !len( boxLangHome ) ) {
+			boxLangHome = server.system.properties[ "user.home" ] & "/.boxlang/";
+		}
+
+		return boxLangHome;
+	}
+
+	private string function setBoxlangHomeToServer(){
 		var systemSettings = wirebox.getInstance( "SystemSettings" );
 		var configService  = wirebox.getInstance( "ConfigService" );
 		var serverService  = wirebox.getInstance( "ServerService" );
@@ -147,7 +171,7 @@ component {
 			serverInfo = serverService.getServerInfoByName( interceptData_serverInfo_name );
 			// Validate that the specified server is actually a BoxLang server
 			if ( !( serverInfo.CFengine contains "boxlang" ) ) {
-				return;
+				return "";
 			}
 			boxLangHome = serverInfo.serverHomeDirectory & "/WEB-INF/boxlang/";
 		} else {
@@ -203,6 +227,7 @@ component {
 				);
 			}
 		}
+		return boxLangHome;
 	}
 
 	/**
